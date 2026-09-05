@@ -1,14 +1,37 @@
+import os
 from pymongo import MongoClient
 
-# MongoDB connection URL
-MONGODB_URL = "mongodb://localhost:27017"
+# =====================================
+# MONGODB CONNECTION
+# =====================================
 
-# Create MongoDB client
-client = MongoClient(MONGODB_URL)
+# Render will use the MONGODB_URL environment variable.
+# If it is not available, local MongoDB will be used.
+MONGODB_URL = os.getenv(
+    "MONGODB_URL",
+    "mongodb://localhost:27017"
+)
 
-# AgriVoice database
+client = MongoClient(
+    MONGODB_URL,
+    serverSelectionTimeoutMS=10000
+)
+
+# =====================================
+# TEST DATABASE CONNECTION
+# =====================================
+
+try:
+    client.admin.command("ping")
+    print("MongoDB connected successfully!")
+except Exception as e:
+    print("MongoDB connection failed:", e)
+
+# =====================================
+# AGRIVOICE DATABASE
+# =====================================
+
 db = client["agrivoice"]
-
 
 # =====================================
 # DATABASE COLLECTIONS
