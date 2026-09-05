@@ -1,0 +1,30 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Environment / secrets
+.env
+.env.*
+
+# Node
+node_modules/
+frontend/node_modules/
+
+# React build
+frontend/dist/
+frontend/build/
+
+# Uploaded user images
+uploads/disease_images/*
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

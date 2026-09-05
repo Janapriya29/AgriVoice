@@ -1,0 +1,405 @@
+/* ================================
+   Market Analysis Page
+================================ */
+
+.market-page {
+  min-height: 100vh;
+  background: #f4f8f4;
+  color: #1f2d24;
+}
+
+/* ================================
+   Navbar
+================================ */
+
+.market-navbar {
+  height: 72px;
+  background: white;
+  border-bottom: 1px solid #e3ebe4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6%;
+}
+
+.market-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2f7d46;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.market-back-btn {
+  border: none;
+  background: #edf6ef;
+  color: #2f7d46;
+  padding: 10px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.market-back-btn:hover {
+  background: #dcefe0;
+}
+
+/* ================================
+   Main Content
+================================ */
+
+.market-content {
+  width: 88%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 45px 0 70px;
+}
+
+/* ================================
+   Heading
+================================ */
+
+.market-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 35px;
+}
+
+.market-heading-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #dff1e3;
+  color: #2f7d46;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.market-heading h1 {
+  margin: 0 0 7px;
+  font-size: 32px;
+}
+
+.market-heading p {
+  margin: 0;
+  color: #66756a;
+  font-size: 15px;
+}
+
+/* ================================
+   Messages
+================================ */
+
+.market-message {
+  background: white;
+  padding: 35px;
+  text-align: center;
+  border-radius: 16px;
+  color: #66756a;
+}
+
+.market-error {
+  background: #fff3f3;
+  border: 1px solid #f1caca;
+  color: #b42318;
+  padding: 18px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ================================
+   Best Crop
+================================ */
+
+.best-crop-card {
+  background: linear-gradient(135deg, #2f7d46, #4b9660);
+  color: white;
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 35px;
+  box-shadow: 0 10px 30px rgba(47, 125, 70, 0.16);
+}
+
+.best-crop-icon {
+  width: 68px;
+  height: 68px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.best-crop-card p {
+  margin: 0 0 5px;
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+}
+
+.best-crop-card h2 {
+  margin: 0 0 5px;
+  font-size: 30px;
+  text-transform: capitalize;
+}
+
+.best-crop-card span {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* ================================
+   Sections
+================================ */
+
+.market-section {
+  background: white;
+  border-radius: 18px;
+  padding: 28px;
+  margin-bottom: 30px;
+  border: 1px solid #e5ede6;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+  color: #2f7d46;
+}
+
+.section-header h2 {
+  margin: 0 0 5px;
+  color: #1f2d24;
+  font-size: 21px;
+}
+
+.section-header p {
+  margin: 0;
+  color: #728076;
+  font-size: 14px;
+}
+
+/* ================================
+   Recommendation Cards
+================================ */
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.recommendation-card {
+  border: 1px solid #e2ebe4;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafdfb;
+}
+
+.recommendation-card h3 {
+  margin: 0 0 5px;
+  text-transform: capitalize;
+  font-size: 18px;
+}
+
+.recommendation-card p {
+  margin: 0;
+  color: #7a877e;
+  font-size: 13px;
+}
+
+.recommendation-card strong {
+  font-size: 20px;
+  color: #2f7d46;
+}
+
+/* ================================
+   Market Table
+================================ */
+
+.market-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.market-table-header,
+.market-table-row {
+  min-width: 800px;
+  display: grid;
+  grid-template-columns:
+    1.3fr
+    1fr
+    1.2fr
+    0.8fr
+    0.9fr
+    1fr;
+  align-items: center;
+  gap: 15px;
+}
+
+.market-table-header {
+  background: #edf6ef;
+  padding: 14px 16px;
+  border-radius: 10px;
+  color: #45614d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.market-table-row {
+  padding: 18px 16px;
+  border-bottom: 1px solid #edf0ed;
+  color: #536158;
+  font-size: 14px;
+}
+
+.market-table-row strong {
+  color: #1f2d24;
+  text-transform: capitalize;
+}
+
+.profit-value {
+  color: #2f7d46;
+  font-weight: 700;
+}
+
+.no-market-data {
+  padding: 25px;
+  background: #f8faf8;
+  border-radius: 12px;
+  text-align: center;
+  color: #77837a;
+}
+
+/* ================================
+   Financial Summary
+================================ */
+
+.financial-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.financial-card {
+  background: white;
+  border: 1px solid #e5ede6;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.financial-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #edf6ef;
+  color: #2f7d46;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.financial-card p {
+  margin: 0 0 5px;
+  color: #77837a;
+  font-size: 13px;
+}
+
+.financial-card h3 {
+  margin: 0;
+  font-size: 21px;
+  color: #1f2d24;
+}
+
+.profit-card {
+  border-color: #cfe5d3;
+}
+
+.profit-card h3 {
+  color: #2f7d46;
+}
+
+/* ================================
+   Responsive
+================================ */
+
+@media (max-width: 900px) {
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .financial-section {
+    grid-template-columns: 1fr;
+  }
+
+  .market-content {
+    width: 92%;
+  }
+}
+
+@media (max-width: 600px) {
+  .market-navbar {
+    padding: 0 4%;
+  }
+
+  .market-logo {
+    font-size: 19px;
+  }
+
+  .market-back-btn {
+    padding: 9px 11px;
+  }
+
+  .market-back-btn {
+    font-size: 0;
+  }
+
+  .market-back-btn svg {
+    margin: 0;
+  }
+
+  .market-heading {
+    align-items: flex-start;
+  }
+
+  .market-heading h1 {
+    font-size: 25px;
+  }
+
+  .market-heading p {
+    line-height: 1.5;
+  }
+
+  .best-crop-card {
+    padding: 22px;
+  }
+
+  .best-crop-card h2 {
+    font-size: 25px;
+  }
+
+  .market-section {
+    padding: 20px;
+  }
+}
