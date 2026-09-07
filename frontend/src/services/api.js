@@ -1,4 +1,5 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://agrivoice-e14c.onrender.com";
+
 
 // Register User
 export async function registerUser(name, email, password) {
@@ -70,6 +71,8 @@ export async function predictDisease(userId, imageFile) {
 
   return data;
 }
+
+
 // Crop Recommendation + Market Analysis
 export async function recommendCrop(userId, cropData) {
   const response = await fetch(

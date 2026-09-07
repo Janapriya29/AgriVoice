@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   ArrowLeft,
   Sprout,
   Leaf,
   Bug,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  IndianRupee,
+  BarChart3
 } from "lucide-react";
 
 import "./History.css";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://agrivoice-e14c.onrender.com";
 
 function History() {
   const navigate = useNavigate();
@@ -39,7 +42,10 @@ function History() {
         return;
       }
 
-      // Get disease history
+      // ================================
+      // DISEASE HISTORY
+      // ================================
+
       const diseaseResponse = await fetch(
         `${API_BASE_URL}/disease/history/${userId}`
       );
@@ -52,7 +58,10 @@ function History() {
         );
       }
 
-      // Get crop history
+      // ================================
+      // CROP HISTORY
+      // ================================
+
       const cropResponse = await fetch(
         `${API_BASE_URL}/crop/history/${userId}`
       );
@@ -81,10 +90,21 @@ function History() {
     return new Date(date).toLocaleString();
   };
 
+  const formatCropName = (crop) => {
+    if (!crop) return "";
+
+    return crop
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+  };
+
   return (
     <div className="history-page">
 
-      {/* Navbar */}
+      {/* ================================
+          NAVBAR
+      ================================= */}
+
       <nav className="history-navbar">
 
         <div
@@ -105,8 +125,14 @@ function History() {
 
       </nav>
 
-      {/* Main */}
+
+      {/* ================================
+          MAIN CONTENT
+      ================================= */}
+
       <main className="history-content">
+
+        {/* Heading */}
 
         <div className="history-heading">
 
@@ -115,21 +141,29 @@ function History() {
           </div>
 
           <div>
+
             <h1>My History</h1>
 
             <p>
               View your previous disease predictions
               and crop recommendations.
             </p>
+
           </div>
 
         </div>
+
+
+        {/* Loading */}
 
         {loading && (
           <div className="history-message">
             Loading your history...
           </div>
         )}
+
+
+        {/* Error */}
 
         {error && (
           <div className="history-error">
@@ -138,11 +172,17 @@ function History() {
           </div>
         )}
 
-        {!loading && !error && (
 
+        {/* ================================
+            HISTORY CONTENT
+        ================================= */}
+
+        {!loading && !error && (
           <>
 
-            {/* Disease History */}
+            {/* ================================
+                DISEASE HISTORY
+            ================================= */}
 
             <section className="history-section">
 
@@ -151,14 +191,19 @@ function History() {
                 <Bug size={24} />
 
                 <div>
-                  <h2>Disease Prediction History</h2>
+
+                  <h2>
+                    Disease Prediction History
+                  </h2>
 
                   <p>
                     Your previous plant disease detections
                   </p>
+
                 </div>
 
               </div>
+
 
               {diseaseHistory.length === 0 ? (
 
@@ -177,6 +222,8 @@ function History() {
                       key={item._id}
                     >
 
+                      {/* Disease Image */}
+
                       {item.image_url && (
                         <img
                           className="history-image"
@@ -185,18 +232,28 @@ function History() {
                         />
                       )}
 
+
                       <div className="history-card-content">
 
                         <h3>
                           {item.prediction}
                         </h3>
 
+
+                        {/* Confidence */}
+
                         <div className="confidence">
-                          Confidence:{" "}
+
+                          Confidence:
+
                           <strong>
                             {item.confidence}%
                           </strong>
+
                         </div>
+
+
+                        {/* Date */}
 
                         <p className="history-date">
                           {formatDate(item.created_at)}
@@ -215,7 +272,9 @@ function History() {
             </section>
 
 
-            {/* Crop History */}
+            {/* ================================
+                CROP HISTORY
+            ================================= */}
 
             <section className="history-section">
 
@@ -224,14 +283,19 @@ function History() {
                 <TrendingUp size={24} />
 
                 <div>
-                  <h2>Crop Recommendation History</h2>
+
+                  <h2>
+                    Crop Recommendation History
+                  </h2>
 
                   <p>
                     Your previous AI crop recommendations
                   </p>
+
                 </div>
 
               </div>
+
 
               {cropHistory.length === 0 ? (
 
@@ -250,21 +314,37 @@ function History() {
                       key={item._id}
                     >
 
+                      {/* Crop Icon */}
+
                       <div className="crop-history-icon">
                         <Sprout size={35} />
                       </div>
 
+
                       <div className="history-card-content">
+
+                        {/* Best Crop */}
 
                         <p className="best-label">
                           BEST OVERALL CROP
                         </p>
 
                         <h3>
-                          {item.best_overall_crop}
+                          {formatCropName(
+                            item.best_overall_crop
+                          )}
                         </h3>
 
+
+                        {/* ================================
+                            AI RECOMMENDATIONS
+                        ================================= */}
+
                         <div className="recommendation-history">
+
+                          <h4>
+                            AI Recommended Crops
+                          </h4>
 
                           {item.recommendations?.map(
                             (recommendation, index) => (
@@ -275,7 +355,9 @@ function History() {
                               >
 
                                 <span>
-                                  {recommendation.crop}
+                                  {formatCropName(
+                                    recommendation.crop
+                                  )}
                                 </span>
 
                                 <strong>
@@ -289,30 +371,112 @@ function History() {
 
                         </div>
 
+
+                        {/* ================================
+                            MARKET ANALYSIS
+                        ================================= */}
+
                         {item.market_analysis?.length > 0 && (
 
                           <div className="history-market">
 
-                            <h4>
-                              Market Analysis
-                            </h4>
+                            <div className="history-market-title">
+
+                              <BarChart3 size={18} />
+
+                              <h4>
+                                Market Analysis
+                              </h4>
+
+                            </div>
+
 
                             {item.market_analysis.map(
                               (market, index) => (
 
                                 <div
-                                  className="market-history-row"
+                                  className="market-history-card"
                                   key={index}
                                 >
 
-                                  <span>
-                                    {market.crop}
-                                  </span>
+                                  <div className="market-history-row">
 
-                                  <span>
-                                    ₹
-                                    {market.average_modal_price}
-                                  </span>
+                                    <span>
+                                      Crop
+                                    </span>
+
+                                    <strong>
+                                      {formatCropName(
+                                        market.crop
+                                      )}
+                                    </strong>
+
+                                  </div>
+
+
+                                  <div className="market-history-row">
+
+                                    <span>
+                                      ML Confidence
+                                    </span>
+
+                                    <strong>
+                                      {market.ml_confidence}%
+                                    </strong>
+
+                                  </div>
+
+
+                                  <div className="market-history-row">
+
+                                    <span>
+                                      Market Price
+                                    </span>
+
+                                    <strong>
+                                      ₹{market.average_modal_price}
+                                    </strong>
+
+                                  </div>
+
+
+                                  <div className="market-history-row">
+
+                                    <span>
+                                      Markets Available
+                                    </span>
+
+                                    <strong>
+                                      {market.markets_available}
+                                    </strong>
+
+                                  </div>
+
+
+                                  <div className="market-history-row">
+
+                                    <span>
+                                      Price Score
+                                    </span>
+
+                                    <strong>
+                                      {market.price_score}
+                                    </strong>
+
+                                  </div>
+
+
+                                  <div className="market-history-row profit-row">
+
+                                    <span>
+                                      Estimated Profit
+                                    </span>
+
+                                    <strong>
+                                      ₹{market.estimated_profit}
+                                    </strong>
+
+                                  </div>
 
                                 </div>
 
@@ -322,6 +486,11 @@ function History() {
                           </div>
 
                         )}
+
+
+                        {/* ================================
+                            DATE
+                        ================================= */}
 
                         <p className="history-date">
                           {formatDate(item.created_at)}
@@ -340,7 +509,6 @@ function History() {
             </section>
 
           </>
-
         )}
 
       </main>

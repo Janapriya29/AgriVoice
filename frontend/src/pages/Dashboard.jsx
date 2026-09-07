@@ -14,6 +14,8 @@ import {
 
 import "./Dashboard.css";
 
+const API_BASE_URL = "https://agrivoice-e14c.onrender.com";
+
 function Dashboard() {
   const navigate = useNavigate();
 
@@ -29,17 +31,32 @@ function Dashboard() {
     async function fetchRecentActivity() {
       try {
         const [cropResponse, diseaseResponse] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/crop/history/${userId}`),
-          fetch(`http://127.0.0.1:8000/disease/history/${userId}`)
+          fetch(`${API_BASE_URL}/crop/history/${userId}`),
+          fetch(`${API_BASE_URL}/disease/history/${userId}`)
         ]);
 
         const cropData = await cropResponse.json();
         const diseaseData = await diseaseResponse.json();
 
+        if (!cropResponse.ok) {
+          throw new Error(
+            cropData.detail || "Failed to fetch crop history"
+          );
+        }
+
+        if (!diseaseResponse.ok) {
+          throw new Error(
+            diseaseData.detail || "Failed to fetch disease history"
+          );
+        }
+
         const activities = [];
 
         // Latest Crop Recommendation
-        if (cropData.history && cropData.history.length > 0) {
+        if (
+          cropData.history &&
+          cropData.history.length > 0
+        ) {
           const latestCrop = cropData.history[0];
 
           activities.push({
@@ -51,7 +68,10 @@ function Dashboard() {
         }
 
         // Latest Disease Detection
-        if (diseaseData.history && diseaseData.history.length > 0) {
+        if (
+          diseaseData.history &&
+          diseaseData.history.length > 0
+        ) {
           const latestDisease = diseaseData.history[0];
 
           activities.push({
@@ -64,14 +84,20 @@ function Dashboard() {
 
         // Sort newest activity first
         activities.sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
+          (a, b) =>
+            new Date(b.date) - new Date(a.date)
         );
 
         // Show only latest 3 activities
-        setRecentActivity(activities.slice(0, 3));
+        setRecentActivity(
+          activities.slice(0, 3)
+        );
 
       } catch (error) {
-        console.error("Failed to fetch recent activity:", error);
+        console.error(
+          "Failed to fetch recent activity:",
+          error
+        );
       }
     }
 
@@ -116,7 +142,6 @@ function Dashboard() {
 
       </nav>
 
-
       {/* Main Content */}
       <main className="dashboard-content">
 
@@ -146,12 +171,10 @@ function Dashboard() {
 
         </section>
 
-
         {/* Dashboard Heading */}
         <h2 className="dashboard-heading">
           What would you like to do?
         </h2>
-
 
         {/* Dashboard Cards */}
         <section className="dashboard-grid">
@@ -171,7 +194,9 @@ function Dashboard() {
             </p>
 
             <button
-              onClick={() => navigate("/crop-recommendation")}
+              onClick={() =>
+                navigate("/crop-recommendation")
+              }
               className="dashboard-action-btn"
             >
               Get Recommendation
@@ -179,7 +204,6 @@ function Dashboard() {
             </button>
 
           </div>
-
 
           {/* Disease Detection */}
           <div className="dashboard-card">
@@ -196,7 +220,9 @@ function Dashboard() {
             </p>
 
             <button
-              onClick={() => navigate("/disease-detection")}
+              onClick={() =>
+                navigate("/disease-detection")
+              }
               className="dashboard-action-btn"
             >
               Detect Disease
@@ -204,7 +230,6 @@ function Dashboard() {
             </button>
 
           </div>
-
 
           {/* Market Analysis */}
           <div className="dashboard-card">
@@ -221,7 +246,9 @@ function Dashboard() {
             </p>
 
             <button
-              onClick={() => navigate("/market-analysis")}
+              onClick={() =>
+                navigate("/market-analysis")
+              }
               className="dashboard-action-btn"
             >
               Analyze Market
@@ -229,7 +256,6 @@ function Dashboard() {
             </button>
 
           </div>
-
 
           {/* History */}
           <div className="dashboard-card">
@@ -246,7 +272,9 @@ function Dashboard() {
             </p>
 
             <button
-              onClick={() => navigate("/history")}
+              onClick={() =>
+                navigate("/history")
+              }
               className="dashboard-action-btn"
             >
               View History
@@ -256,7 +284,6 @@ function Dashboard() {
           </div>
 
         </section>
-
 
         {/* Recent Activity */}
         <section className="recent-activity">
@@ -275,14 +302,15 @@ function Dashboard() {
 
             <button
               className="view-history-btn"
-              onClick={() => navigate("/history")}
+              onClick={() =>
+                navigate("/history")
+              }
             >
               View All
               <ArrowRight size={17} />
             </button>
 
           </div>
-
 
           {/* No Activity */}
           {recentActivity.length === 0 ? (
@@ -309,48 +337,55 @@ function Dashboard() {
             /* Activity List */
             <div className="activity-list">
 
-              {recentActivity.map((activity, index) => (
+              {recentActivity.map(
+                (activity, index) => (
 
-                <div
-  className="activity-item"
-  key={index}
-  onClick={() =>
-    navigate(
-      activity.type === "crop"
-        ? "/crop-recommendation"
-        : "/disease-detection"
-    )
-  }
->
+                  <div
+                    className="activity-item"
+                    key={index}
+                    onClick={() =>
+                      navigate(
+                        activity.type === "crop"
+                          ? "/crop-recommendation"
+                          : "/disease-detection"
+                      )
+                    }
+                  >
 
-                  <div className="activity-icon">
+                    <div className="activity-icon">
 
-                    {activity.type === "crop" ? (
-                      <Leaf size={22} />
-                    ) : (
-                      <ScanLine size={22} />
-                    )}
+                      {activity.type === "crop" ? (
+                        <Leaf size={22} />
+                      ) : (
+                        <ScanLine size={22} />
+                      )}
+
+                    </div>
+
+                    <div className="activity-details">
+
+                      <h3>
+                        {activity.title}
+                      </h3>
+
+                      <p>
+                        {activity.description}
+                      </p>
+
+                      {activity.date && (
+                        <span className="activity-date">
+                          {new Date(
+                            activity.date
+                          ).toLocaleString()}
+                        </span>
+                      )}
+
+                    </div>
 
                   </div>
 
-
-                  <div className="activity-details">
-
-                    <h3>{activity.title}</h3>
-
-                    <p>{activity.description}</p>
-
-{activity.date && (
-  <span className="activity-date">
-    {new Date(activity.date).toLocaleString()}
-  </span>
-)}
-
-                  </div>
-
-                </div>
-
-              ))}
+                )
+              )}
 
             </div>
 
