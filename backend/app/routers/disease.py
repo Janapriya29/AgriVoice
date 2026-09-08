@@ -44,9 +44,7 @@ UPLOAD_DIR.mkdir(
 
 @router.post("/predict")
 async def predict_disease(
-
     user_id: str = Form(...),
-
     file: UploadFile = File(...)
 ):
 
@@ -88,7 +86,7 @@ async def predict_disease(
         # Read uploaded image
         image_bytes = await file.read()
 
-        # Open image
+        # Open uploaded image
         image = Image.open(
             io.BytesIO(image_bytes)
         )
@@ -126,7 +124,10 @@ async def predict_disease(
             model_service.predict_disease(image)
         )
 
-        # Image URL
+        # ---------------------------------
+        # IMAGE URL
+        # ---------------------------------
+
         image_url = (
             f"/uploads/disease_images/"
             f"{unique_filename}"
@@ -197,7 +198,10 @@ async def predict_disease(
 @router.get("/history/{user_id}")
 def get_disease_history(user_id: str):
 
-    # Validate user ID
+    # ---------------------------------
+    # VALIDATE USER ID
+    # ---------------------------------
+
     try:
         object_id = ObjectId(user_id)
 
@@ -207,7 +211,10 @@ def get_disease_history(user_id: str):
             detail="Invalid user ID."
         )
 
-    # Check user exists
+    # ---------------------------------
+    # CHECK USER EXISTS
+    # ---------------------------------
+
     user = users_collection.find_one(
         {"_id": object_id}
     )
@@ -218,26 +225,38 @@ def get_disease_history(user_id: str):
             detail="User not found."
         )
 
-    # Get prediction history
+    # ---------------------------------
+    # GET PREDICTION HISTORY
+    # ---------------------------------
+
     history = list(
         disease_history_collection
         .find({"user_id": object_id})
         .sort("created_at", -1)
     )
 
-    # Convert MongoDB data to JSON format
+    # ---------------------------------
+    # CONVERT MONGODB DATA TO JSON
+    # ---------------------------------
+
     for item in history:
 
         item["_id"] = str(item["_id"])
         item["user_id"] = str(item["user_id"])
 
-        # Add full URL for frontend
-        if "image_url" in item:
+        # ---------------------------------
+        # ADD FULL RENDER URL FOR FRONTEND
+        # ---------------------------------
 
-    item["image_url"] = (
-        "https://agrivoice-e14c.onrender.com"
-        + item["image_url"]
-    )
+        if "image_url" in item:
+            item["image_url"] = (
+                "https://agrivoice-e14c.onrender.com"
+                + item["image_url"]
+            )
+
+    # ---------------------------------
+    # RETURN HISTORY
+    # ---------------------------------
 
     return {
         "user_id": user_id,
