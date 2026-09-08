@@ -34,6 +34,8 @@ function MarketAnalysis() {
 
       const userId = localStorage.getItem("user_id");
 
+      console.log("Market Analysis User ID:", userId);
+
       if (!userId) {
         setError("Please login again.");
         return;
@@ -43,7 +45,11 @@ function MarketAnalysis() {
         `${API_BASE_URL}/crop/history/${userId}`
       );
 
+      console.log("Market API status:", response.status);
+
       const data = await response.json();
+
+      console.log("Market API data:", data);
 
       if (!response.ok) {
         throw new Error(
@@ -58,19 +64,30 @@ function MarketAnalysis() {
         return;
       }
 
-      // Latest crop recommendation
+      // Latest recommendation
       const latest = data.history[0];
+
+      // Make sure market analysis exists
+      if (
+        !latest.market_analysis ||
+        latest.market_analysis.length === 0
+      ) {
+        setError(
+          "No market analysis data available for the latest recommendation."
+        );
+        return;
+      }
 
       setMarketData(latest);
 
     } catch (err) {
-      setError(err.message);
+      console.error("Market Analysis Error:", err);
+      setError(err.message || "Failed to load market analysis.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Convert crop name to readable format
   const formatCropName = (crop) => {
     if (!crop) return "";
 
@@ -79,7 +96,6 @@ function MarketAnalysis() {
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   };
 
-  // Format currency
   const formatMoney = (value) => {
     if (value === undefined || value === null) {
       return "₹0";
@@ -91,10 +107,7 @@ function MarketAnalysis() {
   return (
     <div className="market-page">
 
-      {/* =================================
-          NAVBAR
-      ================================= */}
-
+      {/* NAVBAR */}
       <nav className="market-navbar">
 
         <div
@@ -116,13 +129,8 @@ function MarketAnalysis() {
       </nav>
 
 
-      {/* =================================
-          MAIN CONTENT
-      ================================= */}
-
+      {/* MAIN CONTENT */}
       <main className="market-content">
-
-        {/* Heading */}
 
         <div className="market-heading">
 
@@ -131,21 +139,18 @@ function MarketAnalysis() {
           </div>
 
           <div>
-
             <h1>Market Analysis</h1>
 
             <p>
               Analyze market prices, estimated costs and
               potential profit for your recommended crops.
             </p>
-
           </div>
 
         </div>
 
 
-        {/* Loading */}
-
+        {/* LOADING */}
         {loading && (
           <div className="market-message">
             Loading market analysis...
@@ -153,10 +158,8 @@ function MarketAnalysis() {
         )}
 
 
-        {/* Error */}
-
+        {/* ERROR */}
         {!loading && error && (
-
           <div className="market-error">
 
             <AlertCircle size={22} />
@@ -164,22 +167,14 @@ function MarketAnalysis() {
             <span>{error}</span>
 
           </div>
-
         )}
 
 
-        {/* =================================
-            RESULTS
-        ================================= */}
-
+        {/* RESULTS */}
         {!loading && !error && marketData && (
-
           <>
 
-            {/* =================================
-                BEST OVERALL CROP
-            ================================= */}
-
+            {/* BEST CROP */}
             <section className="best-crop-card">
 
               <div className="best-crop-icon">
@@ -206,10 +201,7 @@ function MarketAnalysis() {
             </section>
 
 
-            {/* =================================
-                AI RECOMMENDED CROPS
-            ================================= */}
-
+            {/* AI RECOMMENDATIONS */}
             <section className="market-section">
 
               <div className="section-header">
@@ -217,16 +209,12 @@ function MarketAnalysis() {
                 <Sprout size={25} />
 
                 <div>
-
-                  <h2>
-                    AI Recommended Crops
-                  </h2>
+                  <h2>AI Recommended Crops</h2>
 
                   <p>
                     Crops identified as suitable for your
                     farm conditions.
                   </p>
-
                 </div>
 
               </div>
@@ -248,9 +236,7 @@ function MarketAnalysis() {
                           {formatCropName(item.crop)}
                         </h3>
 
-                        <p>
-                          AI Confidence
-                        </p>
+                        <p>AI Confidence</p>
 
                       </div>
 
@@ -268,10 +254,7 @@ function MarketAnalysis() {
             </section>
 
 
-            {/* =================================
-                MARKET DETAILS
-            ================================= */}
-
+            {/* MARKET DETAILS */}
             <section className="market-section">
 
               <div className="section-header">
@@ -280,9 +263,7 @@ function MarketAnalysis() {
 
                 <div>
 
-                  <h2>
-                    Market Details
-                  </h2>
+                  <h2>Market Details</h2>
 
                   <p>
                     Latest available market information
@@ -294,197 +275,170 @@ function MarketAnalysis() {
               </div>
 
 
-              {marketData.market_analysis?.length > 0 ? (
+              <div className="market-table">
 
-                <div className="market-table">
+                <div className="market-table-header">
 
-                  {/* Table Header */}
-
-                  <div className="market-table-header">
-
-                    <span>Crop</span>
-
-                    <span>ML Confidence</span>
-
-                    <span>Market Price</span>
-
-                    <span>Markets</span>
-
-                    <span>Price Score</span>
-
-                    <span>Profit</span>
-
-                  </div>
-
-
-                  {/* Table Rows */}
-
-                  {marketData.market_analysis.map(
-                    (item, index) => (
-
-                      <div
-                        className="market-table-row"
-                        key={index}
-                      >
-
-                        <strong>
-                          {formatCropName(item.crop)}
-                        </strong>
-
-                        <span>
-                          {item.ml_confidence}%
-                        </span>
-
-                        <span>
-                          {formatMoney(
-                            item.average_modal_price
-                          )}
-                        </span>
-
-                        <span>
-                          {item.markets_available}
-                        </span>
-
-                        <span>
-                          {item.price_score}
-                        </span>
-
-                        <span className="profit-value">
-                          {formatMoney(
-                            item.estimated_profit
-                          )}
-                        </span>
-
-                      </div>
-
-                    )
-                  )}
+                  <span>Crop</span>
+                  <span>ML Confidence</span>
+                  <span>Market Price</span>
+                  <span>Markets</span>
+                  <span>Price Score</span>
+                  <span>Profit</span>
 
                 </div>
 
-              ) : (
 
-                <div className="no-market-data">
-                  No market analysis data available.
-                </div>
+                {marketData.market_analysis.map(
+                  (item, index) => (
 
-              )}
+                    <div
+                      className="market-table-row"
+                      key={index}
+                    >
+
+                      <strong>
+                        {formatCropName(item.crop)}
+                      </strong>
+
+                      <span>
+                        {item.ml_confidence}%
+                      </span>
+
+                      <span>
+                        {formatMoney(
+                          item.average_modal_price
+                        )}
+                      </span>
+
+                      <span>
+                        {item.markets_available}
+                      </span>
+
+                      <span>
+                        {item.price_score}
+                      </span>
+
+                      <span className="profit-value">
+                        {formatMoney(
+                          item.estimated_profit
+                        )}
+                      </span>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
 
             </section>
 
 
-            {/* =================================
-                FINANCIAL SUMMARY
-            ================================= */}
+            {/* FINANCIAL SUMMARY */}
+            <section className="financial-section">
 
-            {marketData.market_analysis?.length > 0 && (
+              {marketData.market_analysis.map(
+                (item, index) => (
 
-              <section className="financial-section">
+                  <div
+                    className="financial-card"
+                    key={`price-${index}`}
+                  >
 
-                {marketData.market_analysis.map(
-                  (item, index) => (
+                    <div className="financial-icon">
+                      <IndianRupee size={24} />
+                    </div>
 
-                    <div
-                      className="financial-card"
-                      key={`price-${index}`}
-                    >
+                    <div>
 
-                      <div className="financial-icon">
-                        <IndianRupee size={24} />
-                      </div>
+                      <p>
+                        {formatCropName(item.crop)}
+                        {" — Market Price"}
+                      </p>
 
-                      <div>
-
-                        <p>
-                          {formatCropName(item.crop)}
-                          {" — Market Price"}
-                        </p>
-
-                        <h3>
-                          {formatMoney(
-                            item.average_modal_price
-                          )}
-                        </h3>
-
-                      </div>
+                      <h3>
+                        {formatMoney(
+                          item.average_modal_price
+                        )}
+                      </h3>
 
                     </div>
 
-                  )
-                )}
+                  </div>
+
+                )
+              )}
 
 
-                {marketData.market_analysis.map(
-                  (item, index) => (
+              {marketData.market_analysis.map(
+                (item, index) => (
 
-                    <div
-                      className="financial-card"
-                      key={`cost-${index}`}
-                    >
+                  <div
+                    className="financial-card"
+                    key={`cost-${index}`}
+                  >
 
-                      <div className="financial-icon">
-                        <Wallet size={24} />
-                      </div>
+                    <div className="financial-icon">
+                      <Wallet size={24} />
+                    </div>
 
-                      <div>
+                    <div>
 
-                        <p>
-                          {formatCropName(item.crop)}
-                          {" — Estimated Cost"}
-                        </p>
+                      <p>
+                        {formatCropName(item.crop)}
+                        {" — Estimated Cost"}
+                      </p>
 
-                        <h3>
-                          {formatMoney(
-                            item.estimated_cost
-                          )}
-                        </h3>
-
-                      </div>
+                      <h3>
+                        {formatMoney(
+                          item.estimated_cost
+                        )}
+                      </h3>
 
                     </div>
 
-                  )
-                )}
+                  </div>
+
+                )
+              )}
 
 
-                {marketData.market_analysis.map(
-                  (item, index) => (
+              {marketData.market_analysis.map(
+                (item, index) => (
 
-                    <div
-                      className="financial-card profit-card"
-                      key={`profit-${index}`}
-                    >
+                  <div
+                    className="financial-card profit-card"
+                    key={`profit-${index}`}
+                  >
 
-                      <div className="financial-icon">
-                        <TrendingUp size={24} />
-                      </div>
+                    <div className="financial-icon">
+                      <TrendingUp size={24} />
+                    </div>
 
-                      <div>
+                    <div>
 
-                        <p>
-                          {formatCropName(item.crop)}
-                          {" — Estimated Profit"}
-                        </p>
+                      <p>
+                        {formatCropName(item.crop)}
+                        {" — Estimated Profit"}
+                      </p>
 
-                        <h3>
-                          {formatMoney(
-                            item.estimated_profit
-                          )}
-                        </h3>
-
-                      </div>
+                      <h3>
+                        {formatMoney(
+                          item.estimated_profit
+                        )}
+                      </h3>
 
                     </div>
 
-                  )
-                )}
+                  </div>
 
-              </section>
+                )
+              )}
 
-            )}
+            </section>
 
           </>
-
         )}
 
       </main>

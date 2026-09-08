@@ -41,6 +41,38 @@ class UserCropInput(CropInput):
 
 
 # =====================================
+# HELPER: FIND USER
+# Accepts MongoDB ObjectId OR email
+# =====================================
+
+def find_user(user_id: str):
+
+    # First try MongoDB ObjectId
+    try:
+        object_id = ObjectId(user_id)
+
+        user = users_collection.find_one(
+            {"_id": object_id}
+        )
+
+        if user:
+            return user, object_id
+
+    except Exception:
+        pass
+
+    # If it is not an ObjectId, try email
+    user = users_collection.find_one(
+        {"email": user_id}
+    )
+
+    if user:
+        return user, user["_id"]
+
+    return None, None
+
+
+# =====================================
 # CROP RECOMMENDATION API
 # =====================================
 
@@ -70,23 +102,8 @@ def recommend_crop(data: CropInput):
 @router.post("/recommend-with-market")
 def recommend_with_market(data: UserCropInput):
 
-    # ---------------------------------
-    # VALIDATE USER ID
-    # ---------------------------------
-
-    try:
-        object_id = ObjectId(data.user_id)
-
-    except Exception:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid user ID."
-        )
-
-    # Check whether user exists
-    user = users_collection.find_one(
-        {"_id": object_id}
-    )
+    # Find user
+    user, object_id = find_user(data.user_id)
 
     if not user:
         raise HTTPException(
@@ -94,9 +111,7 @@ def recommend_with_market(data: UserCropInput):
             detail="User not found."
         )
 
-    # ---------------------------------
     # STEP 1: CROP RECOMMENDATION
-    # ---------------------------------
 
     recommendations = model_service.recommend_crops(
         N=data.N,
@@ -108,26 +123,20 @@ def recommend_with_market(data: UserCropInput):
         rainfall=data.rainfall
     )
 
-    # ---------------------------------
     # STEP 2: MARKET ANALYSIS
-    # ---------------------------------
 
     market_analysis = model_service.analyze_market(
         recommendations
     )
 
-    # ---------------------------------
     # STEP 3: FIND BEST CROP
-    # ---------------------------------
 
     best_overall_crop = None
 
     if market_analysis:
         best_overall_crop = market_analysis[0]["crop"]
 
-    # ---------------------------------
-    # STEP 4: SAVE HISTORY TO MONGODB
-    # ---------------------------------
+    # STEP 4: SAVE HISTORY
 
     history_data = {
         "user_id": object_id,
@@ -155,9 +164,7 @@ def recommend_with_market(data: UserCropInput):
         history_data
     )
 
-    # ---------------------------------
     # STEP 5: RETURN RESULT
-    # ---------------------------------
 
     return {
         "message": (
@@ -176,36 +183,14 @@ def recommend_with_market(data: UserCropInput):
 
 
 # =====================================
-# TEST API
-# =====================================
-
-@router.get("/test")
-def test_crop():
-
-    return {
-        "message": "Crop recommendation API is working!"
-    }
-# =====================================
 # GET CROP RECOMMENDATION HISTORY
 # =====================================
 
 @router.get("/history/{user_id}")
 def get_crop_history(user_id: str):
 
-    # Validate user ID
-    try:
-        object_id = ObjectId(user_id)
-
-    except Exception:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid user ID."
-        )
-
-    # Check user exists
-    user = users_collection.find_one(
-        {"_id": object_id}
-    )
+    # Find user using ObjectId OR email
+    user, object_id = find_user(user_id)
 
     if not user:
         raise HTTPException(
@@ -220,13 +205,28 @@ def get_crop_history(user_id: str):
         .sort("created_at", -1)
     )
 
-    # Convert MongoDB ObjectId to string
+    # Convert MongoDB ObjectIds to strings
     for item in history:
+
         item["_id"] = str(item["_id"])
-        item["user_id"] = str(item["user_id"])
+
+        if "user_id" in item:
+            item["user_id"] = str(item["user_id"])
 
     return {
-        "user_id": user_id,
+        "user_id": str(object_id),
         "total_recommendations": len(history),
         "history": history
+    }
+
+
+# =====================================
+# TEST API
+# =====================================
+
+@router.get("/test")
+def test_crop():
+
+    return {
+        "message": "Crop recommendation API is working!"
     }

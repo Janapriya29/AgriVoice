@@ -234,10 +234,10 @@ def get_disease_history(user_id: str):
         # Add full URL for frontend
         if "image_url" in item:
 
-            item["image_url"] = (
-                "http://127.0.0.1:8000"
-                + item["image_url"]
-            )
+    item["image_url"] = (
+        "https://agrivoice-e14c.onrender.com"
+        + item["image_url"]
+    )
 
     return {
         "user_id": user_id,
